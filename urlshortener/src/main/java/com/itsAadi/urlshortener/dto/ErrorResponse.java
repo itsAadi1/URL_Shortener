@@ -1,5 +1,7 @@
 package com.itsAadi.urlshortener.dto;
 
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

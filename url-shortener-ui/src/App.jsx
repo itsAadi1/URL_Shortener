@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createShortUrl } from './services/urlService';
 
 function App() {
@@ -10,6 +10,8 @@ function App() {
   const [copied, setCopied] = useState(false);
   const [alias, setAlias] = useState("");
   const [error, setError] = useState("");
+  const [rateLimitUntil, setRateLimitUntil] = useState(null);
+  const [rateLimitRemaining, setRateLimitRemaining] = useState(0);
 
   const handleChange = (e) => setUrl(e.target.value);
 
@@ -73,6 +75,11 @@ function App() {
       console.error(error);
       if (error && error.code === 409) {
         setError(error.message || 'Alias already in use');
+      } else if (error && error.code === 429) {
+        console.log("rateinggg")
+        const retry = error.retryAfter ?? 60;
+        setRateLimitUntil(Date.now() + retry*1000);
+        setRateLimitRemaining(retry);
       } else {
         setError(error.message || 'Failed to create short URL');
       }
@@ -91,6 +98,20 @@ function App() {
       console.error('Copy failed', err);
     }
   };
+
+  useEffect(() => {
+    if (!rateLimitUntil) return;
+    const id = setInterval(() => {
+      const sec = Math.max(0, Math.ceil((rateLimitUntil - Date.now()) / 1000));
+      setRateLimitRemaining(sec);
+      if (sec <= 0) {
+        setRateLimitUntil(null);
+        setError('');
+        clearInterval(id);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [rateLimitUntil]);
 
   return (
     <div className="app-root d-flex align-items-center justify-content-center min-vh-100">
@@ -112,6 +133,7 @@ function App() {
               value={url}
               onChange={handleChangeAndValidate}
               required
+              disabled={loading || rateLimitRemaining > 0}
             />
             {!isUrlValid && showUrlFeedback && (
               <div className="invalid-feedback d-block">We'll need a valid URL, like "example.com/shortlink"</div>
@@ -126,8 +148,9 @@ function App() {
               placeholder="Custom alias (optional)"
               value={alias}
               onChange={(e) => setAlias(e.target.value)}
+              disabled={loading || rateLimitRemaining > 0}
             />
-            <button className="btn btn-primary" type="submit" disabled={loading}>
+            <button className="btn btn-primary" type="submit" disabled={loading || rateLimitRemaining > 0}>
               {loading ? (
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               ) : (
@@ -136,6 +159,12 @@ function App() {
             </button>
           </div>
         </form>
+
+        {rateLimitRemaining > 0 && (
+          <div className="alert alert-warning p-2 mb-3">
+            Rate limit exceeded. Try again in {rateLimitRemaining} second{rateLimitRemaining !== 1 ? 's' : ''}.
+          </div>
+        )}
 
         {error && (
           <div className="alert alert-danger p-2 mb-3">{error}</div>
