@@ -53,10 +53,9 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getOriginalUrl(String shortCode) {
-        UrlMapping urlMapping = urlCacheService.getUrlMapping(shortCode);
-        urlMapping.setClickCount(urlMapping.getClickCount()+1);
-        urlMappingRepository.save(urlMapping);
-        return urlMapping.getOriginalUrl();
+        String originalUrl=urlCacheService.getUrlMapping(shortCode);
+        urlMappingRepository.incrementClickCount(shortCode);
+        return originalUrl;
     }
     @Override
     public UrlStatsResponse getStats(String shortCode) {

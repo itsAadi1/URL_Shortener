@@ -1,0 +1,36 @@
+:root {
+  --bg-gradient-1: #f7f9fc;
+  --card-bg: #ffffff;
+}
+
+body {
+  background: linear-gradient(180deg, #f3f7fb 0%, #ffffff 100%);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.app-root {
+  padding: 2rem;
+}
+
+.app-card {
+  width: 100%;
+  max-width: 720px;
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+.app-card .display-6 {
+  font-size: 1.6rem;
+}
+
+.input-group .form-control:focus {
+  box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.15);
+}
+
+.result-area input[readonly] {
+  background: #f8f9fa;
+}
+
+@media (max-width: 576px) {
+  .app-card { padding: 1rem; }
+}

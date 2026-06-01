@@ -15,8 +15,8 @@ public class UrlCacheService {
             value="urls",
             key="#shortCode"
     )
-    public UrlMapping getUrlMapping(String shortCode) {
+    public String getUrlMapping(String shortCode) {
         return urlMappingRepository.findByShortCode(shortCode)
-                .orElseThrow(()-> new UrlNotFoundException("Short URL Not Found"));
+                .orElseThrow(()-> new UrlNotFoundException("Short URL Not Found")).getOriginalUrl();
     }
 }
