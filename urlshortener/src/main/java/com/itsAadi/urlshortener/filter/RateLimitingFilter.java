@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class RateLimitingFilter implements Filter {
 
     private final StringRedisTemplate redisTemplate;
-    private static final int REQUEST_LIMIT=2;
+    private static final int REQUEST_LIMIT=10;
     private static final Duration WINDOW=Duration.ofMinutes(1);
     @Value("${app.frontend.url}")
     private String frontendUrl;
