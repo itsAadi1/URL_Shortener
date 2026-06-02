@@ -1,3 +1,4 @@
+const apiUrl=import.meta.env.VITE_API_URL;
 export const createShortUrl = async (url, alias) => {
   const payload = { url };
 
@@ -5,7 +6,7 @@ export const createShortUrl = async (url, alias) => {
     payload.alias = alias;
   }
 
-  const response = await fetch("http://localhost:8081/urls", {
+  const response = await fetch(`${apiUrl}/urls`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
